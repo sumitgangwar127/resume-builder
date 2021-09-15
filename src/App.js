@@ -1,24 +1,73 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
+import Home from "./components/home"
+import Login from "./components/login"
+import SignUp from "./components/signup"
+import NavBar from "./components/navbar"
+import PersonalData from "./components/personalData"
+import Qualifications from "./components/qualifications"
+import { useEffect } from "react"
+import { auth, firestore } from "./firebase"
+import { useDispatch } from "react-redux"
+import { userCreator } from "./redux/actions/userActons"
+import PublicPreview from "./components/publicPreview"
 
-function App() {
+
+
+
+let App = ()=> {
+
+  let dispatch = useDispatch();
+  useEffect(()=>{
+
+    let unsub =auth.onAuthStateChanged(async (user)=>{
+      dispatch(userCreator(user))
+      if(user){
+        let {uid, email} = user;
+        let docRef = firestore.collection("user").doc(uid);
+
+        let doc = await docRef.get();
+
+        if(!doc.exists){
+          docRef.set({
+            email,
+          })
+        }
+      }
+
+    })
+
+    return ()=>{
+      unsub();
+    }
+
+  },[])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+   <>
+   <Router>
+     <NavBar />
+     <Switch>
+     <Route path="/publicpreview/:rid">
+        <PublicPreview />
+      </Route>
+      <Route path="/qualifications">
+        <Qualifications />
+      </Route>
+     <Route path="/personal">
+         <PersonalData />
+       </Route>
+       <Route path="/login">
+         <Login />
+       </Route>
+       <Route path="/signup">
+         <SignUp />
+       </Route>
+       <Route path="/">
+         <Home />
+       </Route>
+     </Switch>
+   </Router>
+   </>
   );
 }
 

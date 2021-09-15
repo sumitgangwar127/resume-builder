@@ -1,0 +1,24 @@
+.personal-container,.prof-container{
+    height: 90vh;
+    
+    display: flex;
+}
+
+.personal-form,.prof-form{
+  
+    width: 50%;
+}
+
+.link-btn{
+    position: fixed;
+    bottom: 4rem;
+    right: 15px;
+}
+
+.save-btn{
+    position: fixed;
+    bottom: 1rem;
+    right: 15px;
+}
+
+
